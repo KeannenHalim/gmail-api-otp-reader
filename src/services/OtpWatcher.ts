@@ -2,8 +2,9 @@ import { promises as fs } from "fs";
 import path from "path";
 import { load } from "cheerio";
 import type { gmail_v1 } from "googleapis";
+import type { OtpWatcherOptions } from "../types/OtpWatcherOptions.js";
 
-const FIVE_MINUTES_MS = 5 * 60 * 1000;
+const DEFAULT_OTP_EXPIRY_MS = 5 * 60 * 1000;
 
 export class OtpWatcher {
     private readonly lastIdFile = path.join(
@@ -14,7 +15,8 @@ export class OtpWatcher {
     );
 
     constructor(
-        private readonly gmail: gmail_v1.Gmail
+        private readonly gmail: gmail_v1.Gmail,
+        private readonly options: OtpWatcherOptions
     ) { }
 
     private async saveLastMessageId(
@@ -95,16 +97,11 @@ export class OtpWatcher {
     async getLatestOtp(
         wantedTo?: string
     ): Promise<string | null> {
-        const query = [
-            "from:no-reply@example.com",
-            'subject:"Sign-In Verification Code"',
-            "newer_than:1d",
-        ].join(" ");
 
         const result =
             await this.gmail.users.messages.list({
                 userId: "me",
-                q: query,
+                q: this.options.query,
             });
 
         const messages =
@@ -188,7 +185,7 @@ export class OtpWatcher {
 
         if (
             Date.now() - receivedAt >
-            FIVE_MINUTES_MS
+            (this.options.otpExpiryMs ?? DEFAULT_OTP_EXPIRY_MS)
         ) {
             return null;
         }
@@ -217,7 +214,7 @@ export class OtpWatcher {
 
         const otp =
             text.match(
-                /OTP.*?(\d{6})/is
+                this.options.otpRegex ?? /OTP.*?(\d{6})/is
             );
 
         if (!otp?.[1]) {

@@ -11,7 +11,7 @@ const SCOPES = [
   "https://www.googleapis.com/auth/gmail.readonly",
 ];
 
-const CREDENTIALS_PATH = path.join(process.cwd(), "client_secret.json");
+const CREDENTIALS_PATH = path.join(process.cwd(), "src", "credentials","client_secret.json");
 const TOKEN_PATH = path.join(process.cwd(), "src","data", "token.json");
 
 interface InstalledCredentials {

@@ -69,3 +69,5 @@ client_secret*.json
 *.local
 
 src/data/
+
+credentials/

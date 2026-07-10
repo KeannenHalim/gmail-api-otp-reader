@@ -1,5 +1,6 @@
 import { GmailAuth } from "./auth/GmailAuth.js";
-import { OtpWatcher } from "./gmail/OtpWatcher.js";
+import { exampleOtpConfig } from "./config/example.otp.config.js";
+import { OtpWatcher } from "./services/OtpWatcher.js";
 
 async function main() {
     const gmailAuth = new GmailAuth();
@@ -7,7 +8,7 @@ async function main() {
     const gmail = await gmailAuth.getClient();
 
     const watcher =
-        new OtpWatcher(gmail);
+        new OtpWatcher(gmail, exampleOtpConfig);
 
     const otp =
         await watcher.waitForOtp(
