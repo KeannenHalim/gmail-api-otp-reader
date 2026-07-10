@@ -96,7 +96,7 @@ export class OtpWatcher {
         wantedTo?: string
     ): Promise<string | null> {
         const query = [
-            "from:no-reply@mekari.com",
+            "from:no-reply@example.com",
             'subject:"Sign-In Verification Code"',
             "newer_than:1d",
         ].join(" ");
